@@ -23,6 +23,11 @@ public class PaymentProvideFactory {
 
   private static final Map<String, PaymentProvider> serviceCache = new HashMap<>();
 
+  /**
+   * This method initializes the payment provider cache. The method is annotated with @PostConstruct
+   * to ensure that the cache is initialized when the bean is created. The method iterates over the
+   * list of payment providers and adds them to the cache using the provider name as the key.
+   */
   @PostConstruct
   public void initMyServiceCache() {
     for (PaymentProvider service : paymentProviderList) {
@@ -30,6 +35,11 @@ public class PaymentProvideFactory {
     }
   }
 
+  /**
+   * This method returns the payment provider based on the payment provider type. The method takes
+   * the payment provider type as an argument and returns the payment provider instance from the
+   * cache. If the payment provider is not found in the cache, the method throws a runtime exception.
+   */
   public static PaymentProvider getPaymentProvider(PaymentProviderType paymentProviderType) {
     PaymentProvider paymentProvider = serviceCache.get(paymentProviderType.name().toLowerCase());
     if (Objects.isNull(paymentProvider))

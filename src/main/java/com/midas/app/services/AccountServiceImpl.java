@@ -52,6 +52,12 @@ public class AccountServiceImpl implements AccountService {
     return accountRepository.findAll();
   }
 
+  /**
+   * updateAccount updates an account in the system or provider.
+   *
+   * @param details is the details of the account to be updated.
+   * @return Account
+   */
   @Override
   public Account updateAccount(Account details) {
     var options =

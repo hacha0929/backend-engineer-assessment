@@ -22,7 +22,7 @@ public interface AccountService {
   /**
    * getAccountById returns an account by its id.
    *
-   * @param id is the id of the account to be found.
+   * @param details is the details of the account found.
    * @return Account
    */
   Account updateAccount(Account details);
