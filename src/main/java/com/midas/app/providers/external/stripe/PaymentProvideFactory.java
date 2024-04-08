@@ -38,7 +38,8 @@ public class PaymentProvideFactory {
   /**
    * This method returns the payment provider based on the payment provider type. The method takes
    * the payment provider type as an argument and returns the payment provider instance from the
-   * cache. If the payment provider is not found in the cache, the method throws a runtime exception.
+   * cache. If the payment provider is not found in the cache, the method throws a runtime
+   * exception.
    */
   public static PaymentProvider getPaymentProvider(PaymentProviderType paymentProviderType) {
     PaymentProvider paymentProvider = serviceCache.get(paymentProviderType.name().toLowerCase());
