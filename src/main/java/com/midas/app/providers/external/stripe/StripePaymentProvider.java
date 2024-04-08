@@ -4,10 +4,12 @@ import com.midas.app.enums.PaymentProviderType;
 import com.midas.app.models.Account;
 import com.midas.app.providers.payment.CreateAccount;
 import com.midas.app.providers.payment.PaymentProvider;
+import com.midas.app.providers.payment.UpdateAccount;
 import com.stripe.Stripe;
 import com.stripe.exception.StripeException;
 import com.stripe.model.Customer;
 import com.stripe.param.CustomerCreateParams;
+import com.stripe.param.CustomerUpdateParams;
 import java.util.UUID;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -54,6 +56,25 @@ public class StripePaymentProvider implements PaymentProvider {
     }
   }
 
+  @Override
+  public Account updateAccount(UpdateAccount details) {
+    try {
+      Stripe.apiKey = configuration.getApiKey();
+      Customer resource = Customer.retrieve(details.getProviderId());
+      CustomerUpdateParams params =
+          CustomerUpdateParams.builder()
+              .setName(details.getFirstName() + " " + details.getLastName())
+              .setEmail(details.getEmail())
+              .build();
+      Customer customer = resource.update(params);
+      log.info("Stripe Payment Customer Updated Successfully with Id {}", customer.getId());
+      return getAccount(details, customer);
+    } catch (StripeException e) {
+      log.error("Error Initiating Update Stripe Customer {}", e.getStripeError());
+      throw new RuntimeException(e);
+    }
+  }
+
   /**
    * getAccount creates an account object from the details and the customer object.
    *
@@ -62,6 +83,24 @@ public class StripePaymentProvider implements PaymentProvider {
    * @return Account
    */
   private Account getAccount(CreateAccount details, Customer customer) {
+    return Account.builder()
+        .id(UUID.fromString(details.getUserId()))
+        .firstName(details.getFirstName())
+        .lastName(details.getLastName())
+        .email(details.getEmail())
+        .paymentProviderType(PaymentProviderType.Stripe)
+        .providerId(customer.getId())
+        .build();
+  }
+
+  /**
+   * getAccount creates an account object from the details and the customer object.
+   *
+   * @param details is the details of the account to be created.
+   * @param customer is the customer object created by the payment provider.
+   * @return Account
+   */
+  private Account getAccount(UpdateAccount details, Customer customer) {
     return Account.builder()
         .id(UUID.fromString(details.getUserId()))
         .firstName(details.getFirstName())

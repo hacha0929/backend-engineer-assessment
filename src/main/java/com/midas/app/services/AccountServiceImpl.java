@@ -3,11 +3,11 @@ package com.midas.app.services;
 import com.midas.app.models.Account;
 import com.midas.app.repositories.AccountRepository;
 import com.midas.app.workflows.CreateAccountWorkflow;
+import com.midas.app.workflows.UpdateAccountWorkflow;
 import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.workflow.Workflow;
 import java.util.List;
-import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
@@ -54,13 +54,13 @@ public class AccountServiceImpl implements AccountService {
 
   @Override
   public Account updateAccount(Account details) {
-    Optional<Account> account = accountRepository.findAccountById(details.getId());
-    if (account.isPresent()) {
-      account.get().setFirstName(details.getFirstName());
-      account.get().setLastName(details.getLastName());
-      account.get().setEmail(details.getEmail());
-      return accountRepository.save(account.get());
-    }
-    return null;
+    var options =
+        WorkflowOptions.newBuilder()
+            .setTaskQueue(UpdateAccountWorkflow.QUEUE_NAME)
+            .setWorkflowId(details.getId().toString())
+            .build();
+    logger.info("initiating workflow to update account for account Id: {}", details.getId());
+    var workflow = workflowClient.newWorkflowStub(UpdateAccountWorkflow.class, options);
+    return workflow.updateAccount(details);
   }
 }
