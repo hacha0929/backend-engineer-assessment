@@ -18,4 +18,12 @@ public interface AccountService {
    * @return List<Account>
    */
   List<Account> getAccounts();
+
+  /**
+   * getAccountById returns an account by its id.
+   *
+   * @param id is the id of the account to be found.
+   * @return Account
+   */
+  Account updateAccount(Account details);
 }

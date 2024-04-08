@@ -7,6 +7,7 @@ import io.temporal.client.WorkflowClient;
 import io.temporal.client.WorkflowOptions;
 import io.temporal.workflow.Workflow;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
@@ -49,5 +50,17 @@ public class AccountServiceImpl implements AccountService {
   @Override
   public List<Account> getAccounts() {
     return accountRepository.findAll();
+  }
+
+  @Override
+  public Account updateAccount(Account details) {
+    Optional<Account> account = accountRepository.findAccountById(details.getId());
+    if (account.isPresent()) {
+      account.get().setFirstName(details.getFirstName());
+      account.get().setLastName(details.getLastName());
+      account.get().setEmail(details.getEmail());
+      return accountRepository.save(account.get());
+    }
+    return null;
   }
 }
